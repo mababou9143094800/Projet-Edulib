@@ -1,0 +1,21 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /dashboard.php
+Disallow: /profile.php
+Disallow: /add-resource.php
+Disallow: /edit-resource.php
+Disallow: /delete-resource.php
+Disallow: /vote.php
+Disallow: /favorite.php
+Disallow: /comment.php
+Disallow: /logout.php
+Disallow: /var/
+
+Allow: /
+Allow: /resources.php
+Allow: /resource-view.php
+Allow: /index.php
+Allow: /login.php
+Allow: /register.php
+
+Sitemap: http://localhost:8000/sitemap.php

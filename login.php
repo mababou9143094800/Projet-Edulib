@@ -20,9 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$email || !$password) {
         $error = 'Veuillez remplir tous les champs.';
-    } elseif (!login_user($email, $password)) {
-        $error = 'Email ou mot de passe incorrect.';
     } else {
+        $result = login_user($email, $password);
+        if ($result === 'locked') {
+            $secs  = rate_limit_remaining_seconds(get_client_ip());
+            $mins  = ceil($secs / 60);
+            $error = "Trop de tentatives échouées. Réessayez dans $mins minute(s).";
+        } elseif ($result === false) {
+            $error = 'Email ou mot de passe incorrect.';
+        }
+    }
+    if (!$error) {
         $redirect = $_POST['redirect'] ?? '/dashboard.php';
         // Sécurité : n'autoriser que les redirections internes
         if (!str_starts_with($redirect, '/') || str_starts_with($redirect, '//')) {

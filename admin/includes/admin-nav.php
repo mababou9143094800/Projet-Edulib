@@ -9,13 +9,14 @@
     </li>
     <li>
       <a href="/admin/users.php"
-         class="admin-nav__link<?= basename($_SERVER['PHP_SELF']) === 'users.php' || basename($_SERVER['PHP_SELF']) === 'edit-user.php' ? ' admin-nav__link--active' : '' ?>">
+         class="admin-nav__link<?= in_array(basename($_SERVER['PHP_SELF']), ['users.php','edit-user.php']) ? ' admin-nav__link--active' : '' ?>">
         Utilisateurs
       </a>
     </li>
     <li>
-      <a href="/resources.php" class="admin-nav__link">
-        Ressources &nearr;
+      <a href="/admin/resources.php"
+         class="admin-nav__link<?= basename($_SERVER['PHP_SELF']) === 'resources.php' && strpos($_SERVER['PHP_SELF'], '/admin/') !== false ? ' admin-nav__link--active' : '' ?>">
+        Ressources
       </a>
     </li>
   </ul>

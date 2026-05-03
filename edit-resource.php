@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'description'  => trim($_POST['description']  ?? ''),
         'contenu'      => trim($_POST['contenu']       ?? ''),
         'categorie_id' => (int)($_POST['categorie_id'] ?? 0),
+        'status'       => in_array($_POST['status'] ?? '', ['draft','published']) ? $_POST['status'] : 'published',
     ];
 
     if (!$old['titre'])        $errors['titre']        = 'Le titre est requis.';
@@ -48,11 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$errors) {
         $stmt = db()->prepare(
-            'UPDATE resources SET titre=?, description=?, contenu=?, categorie_id=? WHERE id=?'
+            'UPDATE resources SET titre=?, description=?, contenu=?, categorie_id=?, status=? WHERE id=?'
         );
         $stmt->execute([
             $old['titre'], $old['description'], $old['contenu'],
-            $old['categorie_id'], $id,
+            $old['categorie_id'], $old['status'], $id,
         ]);
         flash_set('success', 'Ressource mise à jour avec succès.');
         redirect('/resource-view.php?id=' . $id);
@@ -116,6 +117,20 @@ include __DIR__ . '/includes/header.php';
           <label class="form-label" for="contenu">Contenu <abbr title="requis">*</abbr></label>
           <textarea class="form-control" id="contenu" name="contenu" rows="14" style="min-height:240px;" required><?= e($old['contenu']) ?></textarea>
           <?php if (isset($errors['contenu'])): ?><p class="form-error"><?= e($errors['contenu']) ?></p><?php endif; ?>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Visibilité</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="status" value="published"<?= $old['status'] === 'published' ? ' checked' : '' ?>>
+              Publié
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="status" value="draft"<?= $old['status'] === 'draft' ? ' checked' : '' ?>>
+              Brouillon
+            </label>
+          </div>
         </div>
 
         <div class="flex gap-1 flex-wrap">

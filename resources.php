@@ -18,8 +18,8 @@ $page       = max(1, (int)($_GET['page'] ?? 1));
 $offset     = ($page - 1) * $per_page;
 
 // Construction de la requête
-$where  = ['1=1'];
-$params = [];
+$where  = ['(r.status = "published" OR r.auteur_id = ?)'];
+$params = [current_user()['id'] ?? 0];
 if ($cat_id) {
     $where[]  = 'r.categorie_id = ?';
     $params[] = $cat_id;

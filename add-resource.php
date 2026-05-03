@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'description' => trim($_POST['description'] ?? ''),
         'contenu'     => trim($_POST['contenu']      ?? ''),
         'categorie_id'=> (int)($_POST['categorie_id'] ?? 0),
+        'status'      => in_array($_POST['status'] ?? '', ['draft','published']) ? $_POST['status'] : 'published',
     ];
 
     if (!$old['titre'])        $errors['titre']        = 'Le titre est requis.';
@@ -29,15 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$errors) {
         $stmt = db()->prepare(
-            'INSERT INTO resources (titre, description, contenu, categorie_id, auteur_id)
-             VALUES (?, ?, ?, ?, ?)'
+            'INSERT INTO resources (titre, description, contenu, status, categorie_id, auteur_id)
+             VALUES (?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $old['titre'], $old['description'], $old['contenu'],
-            $old['categorie_id'], current_user()['id'],
+            $old['status'], $old['categorie_id'], current_user()['id'],
         ]);
         $new_id = db()->lastInsertId();
-        flash_set('success', 'Votre ressource a été publiée avec succès.');
+        $msg = $old['status'] === 'draft' ? 'Brouillon enregistré.' : 'Votre ressource a été publiée avec succès.';
+        flash_set('success', $msg);
         redirect('/resource-view.php?id=' . $new_id);
     }
 }
@@ -104,8 +106,22 @@ include __DIR__ . '/includes/header.php';
           <?php if (isset($errors['contenu'])): ?><p class="form-error"><?= e($errors['contenu']) ?></p><?php endif; ?>
         </div>
 
+        <div class="form-group">
+          <label class="form-label">Visibilité</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="status" value="published"<?= ($old['status'] ?? 'published') === 'published' ? ' checked' : '' ?>>
+              Publier immédiatement
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="status" value="draft"<?= ($old['status'] ?? '') === 'draft' ? ' checked' : '' ?>>
+              Enregistrer comme brouillon
+            </label>
+          </div>
+        </div>
+
         <div class="flex gap-1 flex-wrap">
-          <button type="submit" class="btn btn--primary">Publier la ressource</button>
+          <button type="submit" class="btn btn--primary">Enregistrer</button>
           <a href="/dashboard.php" class="btn btn--ghost">Annuler</a>
         </div>
 

@@ -760,6 +760,149 @@ tbody tr:hover { background: var(--c-surface-alt); }
 .justify-between { justify-content: space-between; }
 .divider { height: 1px; background: var(--c-border); margin-block: 1.5rem; border: 0; }
 
+/* ── Status badge ───────────────────────────────────────────── */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: .15rem .55rem;
+  border-radius: 100px;
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.status-badge--published {
+  background: var(--c-success-bg);
+  color: var(--c-success);
+  border: 1px solid var(--c-accent-soft);
+}
+.status-badge--draft {
+  background: var(--c-warning-bg);
+  color: var(--c-warning);
+  border: 1px solid #f5d78a;
+}
+
+/* ── Onglets (dashboard) ─────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: .3rem;
+  border-bottom: 2px solid var(--c-border);
+}
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .55rem 1rem;
+  font-size: .9rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--c-text-3);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color var(--transition), border-color var(--transition);
+}
+.tab:hover { color: var(--c-text); }
+.tab--active { color: var(--c-accent); border-bottom-color: var(--c-accent); }
+.tab__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  padding: 0 .35rem;
+  height: 1.3rem;
+  background: var(--c-surface-alt);
+  color: var(--c-text-3);
+  border-radius: 100px;
+  font-size: .72rem;
+  font-weight: 700;
+}
+.tab--active .tab__count { background: var(--c-accent-light); color: var(--c-accent); }
+
+/* ── Radio group (visibilité formulaire) ────────────────────── */
+.radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .9rem;
+  cursor: pointer;
+  color: var(--c-text-2);
+}
+.radio-label input[type=radio] { accent-color: var(--c-accent); }
+
+/* ── Section commentaires ───────────────────────────────────── */
+.comments-section { margin-top: 2rem; }
+.comments-section__title {
+  font-size: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.comment-form { max-width: 640px; }
+.comments-list { display: flex; flex-direction: column; gap: 1rem; }
+
+.comment {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+}
+.comment--reply {
+  background: var(--c-surface-alt);
+  border-radius: var(--radius);
+}
+.comment__header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .5rem;
+  flex-wrap: wrap;
+}
+.comment__author { font-size: .9rem; }
+.comment__date { font-size: .78rem; }
+.comment__body { font-size: .9rem; line-height: 1.65; color: var(--c-text-2); }
+
+.comment-replies {
+  margin-top: .75rem;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--c-border);
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.reply-toggle { margin-top: .6rem; }
+.reply-toggle summary { cursor: pointer; }
+
+/* ── Bouton lien (supprimer commentaire) ────────────────────── */
+.btn-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--c-text-3);
+  font-size: .78rem;
+}
+.btn-link:hover { color: var(--c-error); }
+
+/* ── Barre d'actions groupées (admin) ───────────────────────── */
+.bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: .6rem .75rem;
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+}
+.bulk-bar__select {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  cursor: pointer;
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
   .site-header__inner { gap: 1rem; }

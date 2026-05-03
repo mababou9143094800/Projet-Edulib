@@ -12,20 +12,20 @@ $search = trim($_GET['q'] ?? '');
 $params = [];
 $where  = '1=1';
 if ($search) {
-    $where    = '(nom LIKE ? OR prenom LIKE ? OR email LIKE ?)';
-    $like     = '%' . $search . '%';
-    $params   = [$like, $like, $like];
+    $where  = '(nom LIKE ? OR prenom LIKE ? OR email LIKE ?)';
+    $like   = '%' . $search . '%';
+    $params = [$like, $like, $like];
 }
 
-$users = db()->prepare("
+$users_stmt = db()->prepare("
   SELECT u.*,
     (SELECT COUNT(*) FROM resources r WHERE r.auteur_id = u.id) AS nb_resources
   FROM users u
   WHERE $where
   ORDER BY u.created_at DESC
 ");
-$users->execute($params);
-$users = $users->fetchAll();
+$users_stmt->execute($params);
+$users = $users_stmt->fetchAll();
 
 $page_title = 'Gestion des utilisateurs';
 include __DIR__ . '/../includes/header.php';
@@ -63,46 +63,74 @@ include __DIR__ . '/../includes/header.php';
       </form>
 
       <?php if ($users): ?>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Nom</th>
-                <th>Email</th>
-                <th>Rôle</th>
-                <th>Ressources</th>
-                <th>Inscrit le</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($users as $u): ?>
+        <form method="post" action="/admin/bulk-users.php" id="bulk-form">
+          <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+
+          <!-- Barre d'actions en masse -->
+          <div class="bulk-bar mb-2">
+            <label class="bulk-bar__select">
+              <input type="checkbox" id="select-all" title="Tout sélectionner">
+              <span class="text-sm text-muted">Tout sélectionner</span>
+            </label>
+            <div class="flex gap-1">
+              <select name="bulk_action" class="form-control" style="width:auto; padding:.35rem .75rem; font-size:.82rem;">
+                <option value="">— Action groupée —</option>
+                <option value="delete">Supprimer la sélection</option>
+                <option value="promote">Passer en admin</option>
+                <option value="demote">Passer en user</option>
+              </select>
+              <button type="submit" class="btn btn--sm btn--ghost"
+                      onclick="return confirmBulk(this.form)">Appliquer</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
                 <tr>
-                  <td style="font-weight:600;"><?= e($u['prenom'] . ' ' . $u['nom']) ?></td>
-                  <td class="text-muted text-sm"><?= e($u['email']) ?></td>
-                  <td><span class="role-badge role-badge--<?= $u['role'] ?>"><?= $u['role'] ?></span></td>
-                  <td class="text-muted"><?= (int)$u['nb_resources'] ?></td>
-                  <td class="text-muted text-sm"><?= format_date($u['created_at']) ?></td>
-                  <td>
-                    <div class="td-actions">
-                      <a href="/admin/edit-user.php?id=<?= $u['id'] ?>" class="btn btn--ghost btn--sm">Modifier</a>
-                      <?php if ($u['id'] !== current_user()['id']): ?>
-                        <form method="post" action="/admin/delete-user.php"
-                              onsubmit="return confirm('Supprimer l\'utilisateur <?= e(addslashes($u['prenom'] . ' ' . $u['nom'])) ?> ?')">
-                          <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                          <input type="hidden" name="id" value="<?= $u['id'] ?>">
-                          <button type="submit" class="btn btn--danger btn--sm">Supprimer</button>
-                        </form>
-                      <?php else: ?>
-                        <span class="text-muted text-sm">(vous)</span>
-                      <?php endif; ?>
-                    </div>
-                  </td>
+                  <th style="width:2rem;"></th>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Rôle</th>
+                  <th>Ressources</th>
+                  <th>Inscrit le</th>
+                  <th>Actions</th>
                 </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                <?php foreach ($users as $u): ?>
+                  <tr>
+                    <td>
+                      <?php if ($u['id'] !== current_user()['id']): ?>
+                        <input type="checkbox" name="ids[]" value="<?= $u['id'] ?>" class="row-check">
+                      <?php endif; ?>
+                    </td>
+                    <td style="font-weight:600;"><?= e($u['prenom'] . ' ' . $u['nom']) ?></td>
+                    <td class="text-muted text-sm"><?= e($u['email']) ?></td>
+                    <td><span class="role-badge role-badge--<?= $u['role'] ?>"><?= $u['role'] ?></span></td>
+                    <td class="text-muted"><?= (int)$u['nb_resources'] ?></td>
+                    <td class="text-muted text-sm"><?= format_date($u['created_at']) ?></td>
+                    <td>
+                      <div class="td-actions">
+                        <a href="/admin/edit-user.php?id=<?= $u['id'] ?>" class="btn btn--ghost btn--sm">Modifier</a>
+                        <?php if ($u['id'] !== current_user()['id']): ?>
+                          <form method="post" action="/admin/delete-user.php"
+                                onsubmit="return confirm('Supprimer <?= e(addslashes($u['prenom'] . ' ' . $u['nom'])) ?> ?')">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                            <button type="submit" class="btn btn--danger btn--sm">Supprimer</button>
+                          </form>
+                        <?php else: ?>
+                          <span class="text-muted text-sm">(vous)</span>
+                        <?php endif; ?>
+                      </div>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </form>
       <?php else: ?>
         <div class="empty-state">
           <p class="empty-state__title">Aucun utilisateur trouvé</p>
@@ -112,5 +140,19 @@ include __DIR__ . '/../includes/header.php';
 
   </div>
 </div>
+
+<script>
+document.getElementById('select-all')?.addEventListener('change', function() {
+  document.querySelectorAll('.row-check').forEach(c => c.checked = this.checked);
+});
+function confirmBulk(form) {
+  const action = form.bulk_action.value;
+  const checked = form.querySelectorAll('.row-check:checked').length;
+  if (!action) { alert('Choisissez une action.'); return false; }
+  if (!checked) { alert('Sélectionnez au moins un utilisateur.'); return false; }
+  if (action === 'delete') return confirm('Supprimer ' + checked + ' utilisateur(s) ?');
+  return true;
+}
+</script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

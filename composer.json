@@ -1,0 +1,23 @@
+{
+  "name": "edulib/edulib",
+  "description": "Plateforme de ressources pédagogiques EFREI",
+  "require-dev": {
+    "phpunit/phpunit": "^11"
+  },
+  "autoload": {
+    "files": [
+      "includes/config.php",
+      "includes/db.php",
+      "includes/auth.php",
+      "includes/functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "EduLib\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit --testdox"
+  }
+}
