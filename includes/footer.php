@@ -11,8 +11,15 @@
         <li><a href="/register.php">S'inscrire</a></li>
       </ul>
     </nav>
-    <p class="site-footer__eco">
-      Site sobre &mdash; HTML/CSS pur, 0 tracker, &lt;&nbsp;200&nbsp;Ko par page
+    <?php
+  $page_kb = round(ob_get_length() / 1024, 1);
+  $color   = $page_kb < 100 ? 'var(--c-success, green)' : ($page_kb < 200 ? 'orange' : 'red');
+?>
+<p class="site-footer__eco">
+  Site sobre — HTML/CSS pur, 0 tracker &mdash;
+  <span style="color:<?= $color ?>; font-weight:600;">
+    ⚡ <?= $page_kb ?> Ko
+  </span> cette page
     </p>
   </div>
 </footer>
