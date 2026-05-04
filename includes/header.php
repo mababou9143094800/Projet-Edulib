@@ -19,9 +19,17 @@ $user = current_user();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="EduLib — Bibliothèque de ressources pédagogiques pour étudiants EFREI">
+  <meta name="description" content="EduLib — Bibliothèque de ressources pédagogiques pour étudiants EFREI
+  <meta name="color-scheme" content="light dark">
   <title><?= $page_title ?></title>
   <link rel="stylesheet" href="/css/style.css">
+
+  <script>
+    const t = localStorage.getItem('theme');
+    if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
 </head>
 <body>
 
