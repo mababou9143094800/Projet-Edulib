@@ -59,6 +59,13 @@ $user = current_user();
           <li><a href="/login.php" class="site-nav__link<?= basename($_SERVER['PHP_SELF']) === 'login.php' ? ' site-nav__link--active' : '' ?>">Connexion</a></li>
           <li><a href="/register.php" class="btn btn--sm btn--primary">S'inscrire</a></li>
         <?php endif; ?>
+
+        <li>
+      <button id="theme-toggle" class="btn btn--ghost btn--sm"
+              aria-label="Changer le thème" onclick="toggleTheme()">
+        🌙
+      </button>
+    </li>
       </ul>
     </nav>
 
