@@ -1,4 +1,11 @@
 ﻿<?php
+
+header("X-Frame-Options: DENY");
+header("X-Content-Type-Options: nosniff");
+header("Referrer-Policy: no-referrer");
+header("Permissions-Policy: camera=(), microphone=(), geolocation=()");
+header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'");
+
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/functions.php';
