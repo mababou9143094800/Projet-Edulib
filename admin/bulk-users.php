@@ -1,7 +1,4 @@
 <?php
-// ============================================================
-// EduLib — Admin — Action groupée sur les utilisateurs
-// ============================================================
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -14,7 +11,7 @@ $action = $_POST['bulk_action'] ?? '';
 $ids    = array_filter(array_map('intval', (array)($_POST['ids'] ?? [])));
 $me     = current_user()['id'];
 
-// Retire l'admin courant de la sélection par sécurité
+// on ne peut pas s'appliquer une action à soi-même
 $ids = array_filter($ids, fn($id) => $id !== $me);
 
 if (!$ids || !in_array($action, ['delete','promote','demote'])) {
@@ -29,7 +26,7 @@ switch ($action) {
         db()->prepare("DELETE FROM users WHERE id IN ($placeholders)")
             ->execute(array_values($ids));
         flash_set('success', count($ids) . ' utilisateur(s) supprimé(s).');
-        log_info('Admin bulk delete users', ['ids' => $ids, 'by' => $me]);
+        log_info('Suppression groupée utilisateurs', ['ids' => $ids, 'par' => $me]);
         break;
     case 'promote':
         db()->prepare("UPDATE users SET role = 'admin' WHERE id IN ($placeholders)")

@@ -1,10 +1,7 @@
 <?php
-// ============================================================
-// EduLib — Connexion PDO (singleton)
-// ============================================================
-
 require_once __DIR__ . '/config.php';
 
+// Connexion PDO partagée — une seule instance par requête
 function db() {
     static $pdo = null;
     if ($pdo === null) {

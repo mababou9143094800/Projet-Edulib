@@ -1,13 +1,8 @@
 <?php
-// ============================================================
-// EduLib — Fonctions d'authentification
-// ============================================================
-
 require_once __DIR__ . '/db.php';
 
-// ── Rate limiting ────────────────────────────────────────────
-define('RATE_LIMIT_MAX',     5);   // tentatives max
-define('RATE_LIMIT_WINDOW',  900); // fenêtre en secondes (15 min)
+define('RATE_LIMIT_MAX',    5);    // tentatives avant blocage
+define('RATE_LIMIT_WINDOW', 900);  // durée du blocage en secondes (15 min)
 
 function get_client_ip() {
     return $_SERVER['HTTP_X_FORWARDED_FOR']
@@ -22,13 +17,14 @@ function rate_limit_check($ip) {
         $row = $stmt->fetch();
         if (!$row) return true;
         $elapsed = time() - strtotime($row['last_attempt']);
+        // fenêtre expirée : on repart à zéro
         if ($elapsed >= RATE_LIMIT_WINDOW) {
             db()->prepare('DELETE FROM login_attempts WHERE ip = ?')->execute([$ip]);
             return true;
         }
         return $row['attempts'] < RATE_LIMIT_MAX;
     } catch (PDOException $e) {
-        return true; // fail open si la table n'existe pas encore
+        return true; // si la table n'existe pas encore, on laisse passer
     }
 }
 
@@ -61,7 +57,6 @@ function rate_limit_remaining_seconds($ip) {
     }
 }
 
-// ── Session ──────────────────────────────────────────────────
 function session_start_safe() {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -99,7 +94,7 @@ function require_admin() {
     }
 }
 
-// ── Login / Logout ───────────────────────────────────────────
+// Retourne true, false ou 'locked' selon l'état du rate limiting
 function login_user($email, $password) {
     $ip = get_client_ip();
 
@@ -134,7 +129,6 @@ function logout_user() {
     session_destroy();
 }
 
-// ── CSRF ─────────────────────────────────────────────────────
 function csrf_token() {
     session_start_safe();
     if (empty($_SESSION['csrf_token'])) {

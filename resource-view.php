@@ -1,7 +1,4 @@
-<?php
-// ============================================================
-// EduLib — Vue d'une ressource
-// ============================================================
+﻿<?php
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/functions.php';
@@ -41,7 +38,6 @@ if ($resource['status'] === 'draft' && !$is_mine && !is_admin()) {
     exit;
 }
 
-// ── ETag / Cache-Control ─────────────────────────────────────
 $etag = '"' . md5($resource['id'] . $resource['updated_at']) . '"';
 header('Cache-Control: private, must-revalidate');
 header('ETag: ' . $etag);
@@ -50,7 +46,6 @@ if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && $_SERVER['HTTP_IF_NONE_MATCH'] === 
     exit;
 }
 
-// ── Votes ────────────────────────────────────────────────────
 $vote_count = (int)db()->prepare('SELECT COUNT(*) FROM votes WHERE resource_id = ?')
     ->execute([$id]) ? db()->prepare('SELECT COUNT(*) FROM votes WHERE resource_id = ?') : 0;
 $vote_stmt = db()->prepare('SELECT COUNT(*) FROM votes WHERE resource_id = ?');
@@ -64,7 +59,6 @@ if ($user) {
     $user_voted = (bool)$v->fetchColumn();
 }
 
-// ── Favoris ──────────────────────────────────────────────────
 $user_favorited = false;
 if ($user) {
     $f = db()->prepare('SELECT 1 FROM favorites WHERE resource_id = ? AND user_id = ?');
@@ -72,7 +66,6 @@ if ($user) {
     $user_favorited = (bool)$f->fetchColumn();
 }
 
-// ── Commentaires ─────────────────────────────────────────────
 $com_stmt = db()->prepare('
   SELECT c.*, u.prenom, u.nom AS auteur_nom, u.role AS auteur_role
   FROM comments c

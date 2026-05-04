@@ -1,7 +1,4 @@
 <?php
-// ============================================================
-// EduLib — Ajout / suppression d'un commentaire (POST)
-// ============================================================
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/functions.php';
@@ -25,6 +22,7 @@ if ($action === 'delete') {
     $stmt->execute([$comment_id]);
     $c = $stmt->fetch();
 
+    // seul l'auteur ou un admin peut supprimer
     if ($c && ($c['user_id'] === current_user()['id'] || is_admin())) {
         db()->prepare('DELETE FROM comments WHERE id = ?')->execute([$comment_id]);
         flash_set('success', 'Commentaire supprimé.');
@@ -32,7 +30,6 @@ if ($action === 'delete') {
     redirect('/resource-view.php?id=' . $resource_id);
 }
 
-// action = add
 $contenu   = trim($_POST['contenu'] ?? '');
 $parent_id = isset($_POST['parent_id']) && ctype_digit($_POST['parent_id'])
     ? (int)$_POST['parent_id'] : null;
@@ -46,7 +43,8 @@ if (mb_strlen($contenu) > 2000) {
     redirect('/resource-view.php?id=' . $resource_id);
 }
 
-// Vérifie que le parent appartient bien à la même ressource
+// on s'assure que le commentaire parent est bien sur la même ressource
+// et qu'il n'est pas lui-même une réponse (pas de nesting infini)
 if ($parent_id) {
     $stmt = db()->prepare('SELECT id FROM comments WHERE id = ? AND resource_id = ? AND parent_id IS NULL');
     $stmt->execute([$parent_id, $resource_id]);
@@ -58,7 +56,7 @@ db()->prepare('
     VALUES (?, ?, ?, ?)
 ')->execute([$resource_id, current_user()['id'], $parent_id, $contenu]);
 
-// Notifie l'auteur de la ressource si ce n'est pas lui qui commente
+// notifie l'auteur de la ressource, sauf s'il commente lui-même
 $res = db()->prepare('SELECT auteur_id FROM resources WHERE id = ?');
 $res->execute([$resource_id]);
 $resource = $res->fetch();

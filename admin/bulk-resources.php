@@ -1,7 +1,4 @@
 <?php
-// ============================================================
-// EduLib — Admin — Action groupée sur les ressources
-// ============================================================
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
@@ -25,7 +22,7 @@ switch ($action) {
         db()->prepare("DELETE FROM resources WHERE id IN ($placeholders)")
             ->execute(array_values($ids));
         flash_set('success', count($ids) . ' ressource(s) supprimée(s).');
-        log_info('Admin bulk delete resources', ['ids' => $ids, 'by' => current_user()['id']]);
+        log_info('Suppression groupée ressources', ['ids' => $ids, 'par' => current_user()['id']]);
         break;
     case 'publish':
         db()->prepare("UPDATE resources SET status = 'published' WHERE id IN ($placeholders)")

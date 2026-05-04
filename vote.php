@@ -1,7 +1,4 @@
 <?php
-// ============================================================
-// EduLib — Toggle vote sur une ressource (POST uniquement)
-// ============================================================
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/functions.php';
@@ -15,14 +12,13 @@ $resource_id = isset($_POST['resource_id']) && ctype_digit($_POST['resource_id']
 
 if (!$resource_id) { http_response_code(400); exit; }
 
-// Vérifie que la ressource publiée existe
 $stmt = db()->prepare('SELECT id FROM resources WHERE id = ? AND status = "published"');
 $stmt->execute([$resource_id]);
 if (!$stmt->fetch()) { http_response_code(404); exit; }
 
 $user_id = current_user()['id'];
 
-// Toggle
+// si le vote existe déjà, on l'enlève ; sinon on l'ajoute
 $check = db()->prepare('SELECT 1 FROM votes WHERE resource_id = ? AND user_id = ?');
 $check->execute([$resource_id, $user_id]);
 

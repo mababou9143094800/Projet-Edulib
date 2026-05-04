@@ -1,9 +1,5 @@
 <?php
-// ============================================================
-// EduLib — Configuration
-// Charge .env s'il existe, sinon utilise les valeurs par défaut
-// ============================================================
-
+// Charge .env si présent, sinon les valeurs par défaut restent
 $_env_file = __DIR__ . '/../.env';
 if (is_file($_env_file)) {
     foreach (file($_env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $_line) {
@@ -22,13 +18,10 @@ define('DB_CHARSET', $_ENV['DB_CHARSET'] ?? 'utf8mb4');
 define('SITE_NAME',  $_ENV['SITE_NAME']  ?? 'EduLib');
 define('MAIL_FROM',  $_ENV['MAIL_FROM']  ?? '');
 
-// Sécurité session
 ini_set('session.cookie_httponly', '1');
 ini_set('session.use_strict_mode',  '1');
 ini_set('session.cookie_samesite',  'Strict');
 
-// Fuseau horaire
 date_default_timezone_set('Europe/Paris');
 
-// Répertoire de logs
 define('LOG_DIR', __DIR__ . '/../var/logs');

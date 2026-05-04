@@ -1,9 +1,5 @@
 <?php
-// ============================================================
-// EduLib — Fonctions utilitaires
-// ============================================================
 
-// ── Échappement / HTML ───────────────────────────────────────
 function e($s) {
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
@@ -13,7 +9,6 @@ function redirect($url) {
     exit;
 }
 
-// ── Flash messages ───────────────────────────────────────────
 function flash_set($type, $message) {
     session_start_safe();
     $_SESSION['flash'] = ['type' => $type, 'message' => $message];
@@ -34,7 +29,7 @@ function render_flash() {
     }
 }
 
-// ── Base de données ──────────────────────────────────────────
+// Met en cache le résultat pour éviter plusieurs requêtes par page
 function get_categories() {
     static $cats = null;
     if ($cats === null) {
@@ -43,10 +38,8 @@ function get_categories() {
     return $cats;
 }
 
-// ── Dates ────────────────────────────────────────────────────
 function format_date($date) {
-    $d = new DateTimeImmutable($date);
-    return $d->format('d/m/Y');
+    return (new DateTimeImmutable($date))->format('d/m/Y');
 }
 
 function format_date_full($date) {
@@ -55,13 +48,13 @@ function format_date_full($date) {
     return $d->format('j') . ' ' . $months[(int)$d->format('n') - 1] . ' ' . $d->format('Y');
 }
 
-// ── Texte ────────────────────────────────────────────────────
 function excerpt($text, $length = 150) {
     $text = strip_tags($text);
     if (mb_strlen($text) <= $length) return $text;
     return mb_substr($text, 0, $length) . '…';
 }
 
+// Convertit les doubles sauts de ligne en balises <p>
 function nl2p($text) {
     $text = e($text);
     $paragraphs = array_filter(array_map('trim', explode("\n\n", $text)));
@@ -72,11 +65,11 @@ function nl2p($text) {
     return $out ?: '<p>' . nl2br($text) . '</p>';
 }
 
-// ── Logging ──────────────────────────────────────────────────
 function app_log($level, $message, array $context = []) {
     if (!defined('LOG_DIR')) return;
     if (!is_dir(LOG_DIR)) {
         @mkdir(LOG_DIR, 0755, true);
+        // empêche git de versionner les logs
         @file_put_contents(LOG_DIR . '/.gitignore', "*\n!.gitignore\n");
     }
     $line = sprintf(
@@ -93,9 +86,8 @@ function log_info($msg, $ctx = [])  { app_log('info',  $msg, $ctx); }
 function log_warn($msg, $ctx = [])  { app_log('warn',  $msg, $ctx); }
 function log_error($msg, $ctx = []) { app_log('error', $msg, $ctx); }
 
-// ── Gestion d'erreurs ────────────────────────────────────────
 set_exception_handler(function(Throwable $e) {
-    log_error('Uncaught exception: ' . $e->getMessage(), [
+    log_error('Exception non gérée : ' . $e->getMessage(), [
         'file' => $e->getFile(),
         'line' => $e->getLine(),
     ]);
@@ -104,9 +96,8 @@ set_exception_handler(function(Throwable $e) {
        . '<strong>Une erreur est survenue.</strong> Veuillez réessayer.</div>';
 });
 
-// ── Notifications email ──────────────────────────────────────
 function send_notification($to, $subject, $body) {
-    if (!MAIL_FROM) return false; // désactivé si MAIL_FROM vide
+    if (!MAIL_FROM) return false; // MAIL_FROM vide = notifications désactivées
     $headers = "From: " . MAIL_FROM . "\r\nContent-Type: text/plain; charset=UTF-8\r\n";
     $sent = @mail($to, $subject, $body, $headers);
     if (!$sent) {

@@ -1,7 +1,4 @@
-<?php
-// ============================================================
-// EduLib — Admin — Suppression d'un utilisateur (POST)
-// ============================================================
+﻿<?php
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
