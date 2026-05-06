@@ -55,53 +55,64 @@ EduLib est une bibliothèque centralisée où les étudiants peuvent déposer, p
 
 ```
 Projet-Edulib/
-├── admin/                    # Interface d'administration
-│   ├── index.php             # Tableau de bord admin
-│   ├── users.php             # Gestion des utilisateurs (+ bulk)
-│   ├── resources.php         # Gestion des ressources (+ bulk)
-│   ├── bulk-users.php        # Handler actions groupées utilisateurs
-│   ├── bulk-resources.php    # Handler actions groupées ressources
-│   ├── edit-user.php
-│   ├── delete-user.php
+├── frontend/                # Interface utilisateur
+│   ├── index.php
+│   ├── login.php
+│   ├── register.php
+│   ├── resources.php
+│   ├── resource-view.php
+│   ├── dashboard.php
+│   ├── profile.php
+│   ├── css/
+│   │   └── style.css
 │   └── includes/
-│       └── admin-nav.php
-├── includes/                 # Composants partagés
-│   ├── config.php            # Configuration (charge .env)
-│   ├── db.php                # Connexion PDO (singleton)
-│   ├── auth.php              # Auth + CSRF + rate limiting
-│   ├── functions.php         # Utilitaires, logging, email
-│   ├── header.php
-│   └── footer.php
-├── css/
-│   └── style.css
-├── sql/
-│   ├── schema.sql            # Schéma complet (nouvelle installation)
-│   └── migrate.sql           # Migration (base existante)
-├── tests/                    # Tests unitaires PHPUnit
-│   ├── bootstrap.php
-│   ├── FunctionsTest.php
-│   └── AuthTest.php
-├── var/
-│   └── logs/                 # Logs applicatifs (auto-créé)
-├── index.php                 # Page d'accueil
-├── login.php
-├── register.php
-├── logout.php
-├── resources.php             # Liste et recherche
-├── resource-view.php         # Détail + votes + favoris + commentaires
-├── dashboard.php             # Espace personnel (ressources + favoris)
-├── profile.php               # Éditeur de profil
-├── add-resource.php          # Ajout (avec choix brouillon/publié)
-├── edit-resource.php         # Modification
-├── delete-resource.php
-├── vote.php                  # Endpoint toggle vote
-├── favorite.php              # Endpoint toggle favori
-├── comment.php               # Endpoint ajout/suppression commentaire
-├── sitemap.php               # Sitemap XML dynamique
-├── robots.txt
+│       ├── header.php
+│       └── footer.php
+│
+├── backend/                 # Logique serveur (API PHP)
+│   ├── auth.php
+│   ├── vote.php
+│   ├── favorite.php
+│   ├── comment.php
+│   ├── add-resource.php
+│   ├── edit-resource.php
+│   ├── delete-resource.php
+│   └── includes/
+│       ├── db.php
+│       ├── config.php
+│       └── functions.php
+│
+├── admin/                   # Interface admin
+│   ├── dashboard.php
+│   ├── users.php
+│   ├── resources.php
+│   └── reports.php
+│
+├── database/                # Base de données
+│   ├── schema.sql
+│   └── migrate.sql
+│
+├── docs/                    # Documentation projet
+│   ├── UML.png
+│   ├── wireframes.png
+│   ├── ecoindex.png
+│   ├── carbon-calculator.png
+|   ├── Edulib_presentation.pdf
+│   └── rapport.pdf
+│
+├── tests/                   # Tests PHPUnit
+│   ├── Backend/
+│   ├── Frontend/
+│   └── Unit/
+│
+├── var/                     # Logs / cache
+│   ├── cache/
+│   └── logs/
+│
 ├── .env.example
 ├── composer.json
-└── phpunit.xml
+├── phpunit.xml
+└── README.md
 ```
 
 ## Installation
