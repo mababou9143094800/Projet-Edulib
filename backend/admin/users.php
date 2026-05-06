@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../backend/includes/db.php';
-require_once __DIR__ . '/../backend/includes/auth.php';
-require_once __DIR__ . '/../backend/includes/functions.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 require_admin();
 
@@ -25,7 +25,7 @@ $users_stmt->execute($params);
 $users = $users_stmt->fetchAll();
 
 $page_title = 'Gestion des utilisateurs';
-include __DIR__ . '/../backend/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
@@ -41,6 +41,7 @@ include __DIR__ . '/../backend/includes/header.php';
         <h1>Utilisateurs <span class="text-muted text-sm" style="font-weight:400;">(<?= count($users) ?>)</span></h1>
       </div>
 
+      <!-- Recherche -->
       <form method="get" action="" class="filters mb-3">
         <div class="filters__form">
           <div class="filters__group">
@@ -52,16 +53,17 @@ include __DIR__ . '/../backend/includes/header.php';
           <div class="filters__actions">
             <button type="submit" class="btn btn--primary btn--sm">Chercher</button>
             <?php if ($search): ?>
-              <a href="/admin/users.php" class="btn btn--ghost btn--sm">Effacer</a>
+              <a href="/backend/admin/users.php" class="btn btn--ghost btn--sm">Effacer</a>
             <?php endif; ?>
           </div>
         </div>
       </form>
 
       <?php if ($users): ?>
-        <form method="post" action="/admin/bulk-users.php" id="bulk-form">
+        <form method="post" action="/backend/admin/bulk-users.php" id="bulk-form">
           <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
 
+          <!-- Barre d'actions en masse -->
           <div class="bulk-bar mb-2">
             <label class="bulk-bar__select">
               <input type="checkbox" id="select-all" title="Tout sélectionner">
@@ -107,9 +109,9 @@ include __DIR__ . '/../backend/includes/header.php';
                     <td class="text-muted text-sm"><?= format_date($u['created_at']) ?></td>
                     <td>
                       <div class="td-actions">
-                        <a href="/admin/edit-user.php?id=<?= $u['id'] ?>" class="btn btn--ghost btn--sm">Modifier</a>
+                        <a href="/backend/admin/edit-user.php?id=<?= $u['id'] ?>" class="btn btn--ghost btn--sm">Modifier</a>
                         <?php if ($u['id'] !== current_user()['id']): ?>
-                          <form method="post" action="/admin/delete-user.php"
+                          <form method="post" action="/backend/admin/delete-user.php"
                                 onsubmit="return confirm('Supprimer <?= e(addslashes($u['prenom'] . ' ' . $u['nom'])) ?> ?')">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="id" value="<?= $u['id'] ?>">
@@ -150,4 +152,4 @@ function confirmBulk(form) {
 }
 </script>
 
-<?php include __DIR__ . '/../backend/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

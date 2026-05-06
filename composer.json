@@ -6,15 +6,15 @@
   },
   "autoload": {
     "files": [
-      "includes/config.php",
-      "includes/db.php",
-      "includes/auth.php",
-      "includes/functions.php"
+      "backend/includes/config.php",
+      "backend/includes/db.php",
+      "backend/includes/auth.php",
+      "backend/includes/functions.php"
     ]
   },
   "autoload-dev": {
     "psr-4": {
-      "EduLib\\Tests\\": "tests/"
+      "EduLib\\Tests\\": "backend/tests/"
     }
   },
   "scripts": {

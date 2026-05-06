@@ -1,10 +1,11 @@
 <?php
-require_once __DIR__ . '/../backend/includes/db.php';
-require_once __DIR__ . '/../backend/includes/auth.php';
-require_once __DIR__ . '/../backend/includes/functions.php';
+require_once __DIR__ . '/../includes/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 require_admin();
 
+// Statistiques globales
 $stats = db()->query('
   SELECT
     (SELECT COUNT(*) FROM users)        AS nb_users,
@@ -13,11 +14,13 @@ $stats = db()->query('
     (SELECT COUNT(*) FROM users WHERE role="admin") AS nb_admins
 ')->fetch();
 
+// Derniers inscrits
 $last_users = db()->query('
   SELECT id, nom, prenom, email, role, created_at
   FROM users ORDER BY created_at DESC LIMIT 5
 ')->fetchAll();
 
+// Dernières ressources
 $last_resources = db()->query('
   SELECT r.id, r.titre, r.created_at, c.nom AS cat_nom, u.prenom, u.nom AS auteur_nom
   FROM resources r
@@ -27,14 +30,16 @@ $last_resources = db()->query('
 ')->fetchAll();
 
 $page_title = 'Administration';
-include __DIR__ . '/../backend/includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="container">
   <div class="admin-layout">
 
+    <!-- Sidebar -->
     <?php include __DIR__ . '/includes/admin-nav.php'; ?>
 
+    <!-- Contenu -->
     <div>
       <?php render_flash(); ?>
 
@@ -43,6 +48,7 @@ include __DIR__ . '/../backend/includes/header.php';
         <h1>Tableau de bord</h1>
       </div>
 
+      <!-- Stats -->
       <div class="stats-row mb-4">
         <div class="stat-card">
           <div class="stat-card__number"><?= (int)$stats['nb_users'] ?></div>
@@ -62,9 +68,10 @@ include __DIR__ . '/../backend/includes/header.php';
         </div>
       </div>
 
+      <!-- Derniers inscrits -->
       <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
         <h2 style="font-size:1.05rem;">Derniers inscrits</h2>
-        <a href="/admin/users.php" class="btn btn--ghost btn--sm">Tous les utilisateurs &rarr;</a>
+        <a href="/backend/admin/users.php" class="btn btn--ghost btn--sm">Tous les utilisateurs &rarr;</a>
       </div>
       <div class="table-wrap mb-4">
         <table>
@@ -82,9 +89,10 @@ include __DIR__ . '/../backend/includes/header.php';
         </table>
       </div>
 
+      <!-- Dernières ressources -->
       <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
         <h2 style="font-size:1.05rem;">Dernières ressources</h2>
-        <a href="/frontend/resources.php" class="btn btn--ghost btn--sm">Voir les ressources &rarr;</a>
+        <a href="/resources.php" class="btn btn--ghost btn--sm">Voir les ressources &rarr;</a>
       </div>
       <div class="table-wrap">
         <table>
@@ -92,7 +100,7 @@ include __DIR__ . '/../backend/includes/header.php';
           <tbody>
             <?php foreach ($last_resources as $r): ?>
               <tr>
-                <td><a href="/frontend/resource-view.php?id=<?= $r['id'] ?>"><?= e($r['titre']) ?></a></td>
+                <td><a href="/resource-view.php?id=<?= $r['id'] ?>"><?= e($r['titre']) ?></a></td>
                 <td><span class="badge"><?= e($r['cat_nom']) ?></span></td>
                 <td class="text-muted"><?= e($r['prenom'] . ' ' . $r['auteur_nom']) ?></td>
                 <td class="text-muted"><?= format_date($r['created_at']) ?></td>
@@ -106,4 +114,4 @@ include __DIR__ . '/../backend/includes/header.php';
   </div>
 </div>
 
-<?php include __DIR__ . '/../backend/includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

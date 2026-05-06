@@ -24,7 +24,7 @@
   <hr class="divider" style="margin-block:.75rem;">
 
   <ul class="admin-nav__list">
-    <li><a href="/dashboard.php" class="admin-nav__link">Mon espace</a></li>
-    <li><a href="/logout.php" class="admin-nav__link" style="color:var(--c-text-3);">Déconnexion</a></li>
+    <li><a href="/frontend/dashboard.php" class="admin-nav__link">Mon espace</a></li>
+    <li><a href="/backend/logout.php" class="admin-nav__link" style="color:var(--c-text-3);">Déconnexion</a></li>
   </ul>
 </nav>

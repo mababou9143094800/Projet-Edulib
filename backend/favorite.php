@@ -1,0 +1,34 @@
+<?php
+require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/functions.php';
+
+require_login();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); exit; }
+csrf_verify();
+
+$resource_id = isset($_POST['resource_id']) && ctype_digit($_POST['resource_id'])
+    ? (int)$_POST['resource_id'] : 0;
+
+if (!$resource_id) { http_response_code(400); exit; }
+
+$stmt = db()->prepare('SELECT id FROM resources WHERE id = ? AND status = "published"');
+$stmt->execute([$resource_id]);
+if (!$stmt->fetch()) { http_response_code(404); exit; }
+
+$user_id = current_user()['id'];
+
+$check = db()->prepare('SELECT 1 FROM favorites WHERE resource_id = ? AND user_id = ?');
+$check->execute([$resource_id, $user_id]);
+
+if ($check->fetch()) {
+    db()->prepare('DELETE FROM favorites WHERE resource_id = ? AND user_id = ?')
+        ->execute([$resource_id, $user_id]);
+    flash_set('success', 'Retiré des favoris.');
+} else {
+    db()->prepare('INSERT INTO favorites (resource_id, user_id) VALUES (?, ?)')
+        ->execute([$resource_id, $user_id]);
+    flash_set('success', 'Ajouté aux favoris.');
+}
+
+redirect('/frontend/resource-view.php?id=' . $resource_id);

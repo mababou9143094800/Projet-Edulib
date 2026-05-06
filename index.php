@@ -1,11 +1,10 @@
 ﻿<?php
-require_once __DIR__ . '/includes/db.php';
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/backend/includes/db.php';
+require_once __DIR__ . '/backend/includes/auth.php';
+require_once __DIR__ . '/backend/includes/functions.php';
 
 $page_title = 'Accueil';
 
-// Statistiques
 $stats = db()->query('
   SELECT
     (SELECT COUNT(*) FROM resources) AS nb_resources,
@@ -13,7 +12,6 @@ $stats = db()->query('
     (SELECT COUNT(*) FROM categories) AS nb_categories
 ')->fetch();
 
-// Dernières ressources
 $last_resources = db()->query('
   SELECT r.*, c.nom AS cat_nom, u.prenom, u.nom AS auteur_nom
   FROM resources r
@@ -23,10 +21,9 @@ $last_resources = db()->query('
   LIMIT 6
 ')->fetchAll();
 
-include __DIR__ . '/includes/header.php';
+include __DIR__ . '/backend/includes/header.php';
 ?>
 
-<!-- ── Hero ── -->
 <section class="hero">
   <div class="container">
     <p class="hero__eyebrow">Bibliothèque étudiante EFREI</p>
@@ -36,11 +33,11 @@ include __DIR__ . '/includes/header.php';
       Un espace sobre, rapide et sans superflu.
     </p>
     <div class="hero__actions">
-      <a href="/resources.php" class="btn btn--primary btn--lg">Voir les ressources</a>
+      <a href="/frontend/resources.php" class="btn btn--primary btn--lg">Voir les ressources</a>
       <?php if (!is_logged_in()): ?>
-        <a href="/register.php" class="btn btn--outline btn--lg">S'inscrire gratuitement</a>
+        <a href="/frontend/register.php" class="btn btn--outline btn--lg">S'inscrire gratuitement</a>
       <?php else: ?>
-        <a href="/add-resource.php" class="btn btn--outline btn--lg">Déposer une fiche</a>
+        <a href="/backend/add-resource.php" class="btn btn--outline btn--lg">Déposer une fiche</a>
       <?php endif; ?>
     </div>
   </div>
@@ -76,12 +73,12 @@ include __DIR__ . '/includes/header.php';
   <div class="container">
     <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
       <h2>Dernières ressources ajoutées</h2>
-      <a href="/resources.php" class="btn btn--ghost btn--sm">Toutes les ressources &rarr;</a>
+      <a href="/frontend/resources.php" class="btn btn--ghost btn--sm">Toutes les ressources &rarr;</a>
     </div>
 
     <div class="resource-grid">
       <?php foreach ($last_resources as $r): ?>
-        <a href="/resource-view.php?id=<?= $r['id'] ?>" class="card-link">
+        <a href="/frontend/resource-view.php?id=<?= $r['id'] ?>" class="card-link">
           <div class="card-link__body">
             <div class="resource-card__category">
               <span class="badge"><?= e($r['cat_nom']) ?></span>
@@ -119,4 +116,4 @@ include __DIR__ . '/includes/header.php';
   </div>
 </section>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<?php include __DIR__ . '/backend/includes/footer.php'; ?>
